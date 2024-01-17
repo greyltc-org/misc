@@ -11,10 +11,6 @@ $fn=80;
 // schedule 40 4   inch pipe is OD=4.500 in., ID=4.026 in.
 // fan shroud OD=~96mm
 
-// epsilon
-eps = 0.01;
-//eps=10;
-
 d_over_fan_max = 120;
 d_over_fan_min = 96;
 l_below = 30;
@@ -31,17 +27,16 @@ pipe_pipe_shift=d_over_fan_max/2-tube2_od/2-height_from_deck;
 //pipe_pipe_shift = 0;
 
 difference(){
-    union(){
-        translate([0,0,-l_below]) cylinder(h=l_below, d1=d_over_fan_min, d2=d_over_fan_max,center=false);
-        skin([
-            transform(translation([0,0,0]), circle(r=d_over_fan_max/2)),
-            transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
-        ]);
-    }
-    translate([0,0,-l_below-eps]) cylinder(h=l_below+eps, d=d_over_fan_min, center=false);
     skin([
-        transform(translation([0,0,0]), circle(r=d_over_fan_min/2)),
-        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=tube2_id/2))
+        transform(translation([0,0,-l_below]), circle(r=d_over_fan_min/2)),
+        transform(translation([0,0,0]), circle(r=d_over_fan_max/2)),
+        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
     ]);
-    translate([0,pipe_pipe_shift,pipe_pipe_transition-eps]) cylinder(h=l_below+pipe_pipe_transition+tube2_coverage+eps, d=tube2_od+tube2_od_fudge, center=false);
+    skin([
+        transform(translation([0,0,-l_below]), circle(r=d_over_fan_min/2)),
+        transform(translation([0,0,0]), circle(r=d_over_fan_min/2)),
+        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=tube2_id/2)),
+        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=(tube2_od+tube2_od_fudge)/2)),
+        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
+    ]);
 }
