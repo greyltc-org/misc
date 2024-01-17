@@ -1,43 +1,47 @@
+// fetch these repos from https://github.com/openscad
+// and put them into the folder shown by File --> Show Library Folder...
+use <scad-utils/transformations.scad>
+use <scad-utils/shapes.scad>
+use <list-comprehension-demos/skin.scad>
+
 $fn=80;
 
 // units are mm
-// schedule 40 1.5 inch pipe is OD=1.9 in., ID=1.590 in.
+// schedule 40 1.5 inch pipe is OD=1.900 in., ID=1.610 in.
+// schedule 40 4   inch pipe is OD=4.500 in., ID=4.026 in.
 // fan shroud OD=~96mm
 
-d_over_fan_max=120;
-d_over_fan_min=96;
-l_below=30;
-l_above=60;
-shelf_pos=40;
+// epsilon
+eps = 0.01;
+//eps=10;
 
-tube_id = 1.590*25.4;
-tube_od = 1.9*25.4;
-tube_od_fudge=0.5;
+d_over_fan_max = 120;
+d_over_fan_min = 96;
+l_below = 30;
 
+tube2_id = 1.610*25.4;
+tube2_od = 1.9*25.4;
+tube2_od_fudge = 0.5;
+tube2_d_extra = 20;  // additional outer wall diameter at the end of tube2
+tube2_coverage = 20;
+
+pipe_pipe_transition=40;
 height_from_deck=20;
-top_shift=d_over_fan_max/2-tube_od/2-height_from_deck;
-//top_shift = 0;
+pipe_pipe_shift=d_over_fan_max/2-tube2_od/2-height_from_deck;
+//pipe_pipe_shift = 0;
 
 difference(){
     union(){
-        mirror([0,0,1]) cylinder(h=l_below, d1=d_over_fan_max, d2=d_over_fan_min,center=false);
-        if (top_shift){
-            hull(){
-                cylinder(h=0.01, d=d_over_fan_max);
-                translate([0,top_shift,l_above]) cylinder(h=0.01, d=tube_od+tube_od_fudge);
-            }
-        } else {
-            cylinder(h=l_above, d1=d_over_fan_max, d2=tube_od+tube_od_fudge,center=false);
-        }
+        translate([0,0,-l_below]) cylinder(h=l_below, d1=d_over_fan_min, d2=d_over_fan_max,center=false);
+        skin([
+            transform(translation([0,0,0]), circle(r=d_over_fan_max/2)),
+            transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
+        ]);
     }
-    translate([0,0,-l_below]) cylinder(h=l_below, d=d_over_fan_min, center=false);
-    translate([0,top_shift,0]) translate([0,0,shelf_pos]) cylinder(h=l_below+l_above, d=tube_od+tube_od_fudge, center=false);
-    if (top_shift){
-        hull(){
-            cylinder(h=0.01, d=d_over_fan_min);
-            translate([0,top_shift,shelf_pos]) cylinder(h=0.01, d=tube_id);
-        }
-    } else {
-        cylinder(h=shelf_pos, d1=d_over_fan_min, d2=tube_id, center=false);
-    }
+    translate([0,0,-l_below-eps]) cylinder(h=l_below+eps, d=d_over_fan_min, center=false);
+    skin([
+        transform(translation([0,0,0]), circle(r=d_over_fan_min/2)),
+        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=tube2_id/2))
+    ]);
+    translate([0,pipe_pipe_shift,pipe_pipe_transition-eps]) cylinder(h=l_below+pipe_pipe_transition+tube2_coverage+eps, d=tube2_od+tube2_od_fudge, center=false);
 }
