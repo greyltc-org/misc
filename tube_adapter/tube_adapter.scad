@@ -18,17 +18,28 @@ tube1_od = 96 + tube1_od_fudge;
 tube1_ed = tube1_od+tube1_d_extra;
 tube1_coverage = 30;
 
+// for SCH40 1.5in from wall
 tube2_od_fudge = 0.5;
 tube2_d_extra = 20;  // additional outer wall diameter at the end of tube
 tube2_id = 1.610*25.4;
-tube2_od = 1.9*25.4 + tube2_od_fudge;
+tube2_od = 1.900*25.4 + tube2_od_fudge;
 tube2_ed = tube2_od+tube2_d_extra;
 tube2_coverage = 20;
 
-pipe_pipe_transition=40;
 height_from_deck=20;
 pipe_pipe_shift=tube1_ed/2-tube2_od/2-height_from_deck;
-//pipe_pipe_shift = 0;
+
+// for SCH40 4in for exhaust
+//tube2_od_fudge = 0.5;
+//tube2_d_extra = 20;  // additional outer wall diameter at the end of tube
+//tube2_id = 4.026*25.4;
+//tube2_od = 4.500*25.4 + tube2_od_fudge;
+//tube2_ed = tube2_od+tube2_d_extra;
+//tube2_coverage = 20;
+//
+//pipe_pipe_shift=7;
+
+pipe_pipe_transition=40;  // smoothing/adapting length
 
 difference(){
     skin([
