@@ -11,32 +11,38 @@ $fn=80;
 // schedule 40 4   inch pipe is OD=4.500 in., ID=4.026 in.
 // fan shroud OD=~96mm
 
-d_over_fan_max = 120;
-d_over_fan_min = 96;
-l_below = 30;
+tube1_od_fudge = 0.0;
+tube1_d_extra = 24;  // additional outer wall diameter at the end of tube
+tube1_id = 96;
+tube1_od = 96 + tube1_od_fudge;
+tube1_ed = tube1_od+tube1_d_extra;
+tube1_coverage = 30;
 
-tube2_id = 1.610*25.4;
-tube2_od = 1.9*25.4;
 tube2_od_fudge = 0.5;
-tube2_d_extra = 20;  // additional outer wall diameter at the end of tube2
+tube2_d_extra = 20;  // additional outer wall diameter at the end of tube
+tube2_id = 1.610*25.4;
+tube2_od = 1.9*25.4 + tube2_od_fudge;
+tube2_ed = tube2_od+tube2_d_extra;
 tube2_coverage = 20;
 
 pipe_pipe_transition=40;
 height_from_deck=20;
-pipe_pipe_shift=d_over_fan_max/2-tube2_od/2-height_from_deck;
+pipe_pipe_shift=tube1_ed/2-tube2_od/2-height_from_deck;
 //pipe_pipe_shift = 0;
 
 difference(){
     skin([
-        transform(translation([0,0,-l_below]), circle(r=d_over_fan_min/2)),
-        transform(translation([0,0,0]), circle(r=d_over_fan_max/2)),
-        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
+        transform(translation([0,0,0]), circle(r=tube1_od/2)),
+        transform(translation([0,0,tube1_coverage]), circle(r=(tube1_ed)/2)),
+        transform(translation([0,pipe_pipe_shift,tube1_coverage+pipe_pipe_transition]), circle(r=(tube2_ed)/2)),
+        transform(translation([0,pipe_pipe_shift,tube1_coverage+pipe_pipe_transition+tube2_coverage]), circle(r=tube2_od/2))
     ]);
     skin([
-        transform(translation([0,0,-l_below]), circle(r=d_over_fan_min/2)),
-        transform(translation([0,0,0]), circle(r=d_over_fan_min/2)),
-        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=tube2_id/2)),
-        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition]), circle(r=(tube2_od+tube2_od_fudge)/2)),
-        transform(translation([0,pipe_pipe_shift,pipe_pipe_transition+tube2_coverage]), circle(r=(tube2_od+tube2_od_fudge)/2))
+        transform(translation([0,0,0]), circle(r=tube1_od/2)),
+        transform(translation([0,0,tube1_coverage]), circle(r=tube1_od/2)),
+        transform(translation([0,0,tube1_coverage]), circle(r=tube1_id/2)),
+        transform(translation([0,pipe_pipe_shift,tube1_coverage+pipe_pipe_transition]), circle(r=tube2_id/2)),
+        transform(translation([0,pipe_pipe_shift,tube1_coverage+pipe_pipe_transition]), circle(r=tube2_od/2)),
+        transform(translation([0,pipe_pipe_shift,tube1_coverage+pipe_pipe_transition+tube2_coverage]), circle(r=tube2_od/2))
     ]);
 }
