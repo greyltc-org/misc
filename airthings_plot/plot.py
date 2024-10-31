@@ -31,10 +31,14 @@ for datafilepath in here.joinpath("data").glob("*.csv"):
     ax.set_facecolor("silver")
     ax.grid(color='w')
 
-    fantime = "2024-10-14T16:00:00.000"
-    fanline_x = pd.to_datetime(fantime, utc=False).tz_localize(tz_string)
-    fanline = ax.vlines(fanline_x, ymin=ax.get_ylim()[0], ymax=ax.get_ylim()[1], label="dinky fan", color="black", linestyles='dashed')
-    ax.text(fanline_x, 0.35, "dinky fan on", color='k', ha='right', va='top', rotation=90, transform=ax.get_xaxis_transform())
+
+    fantimes = []
+    fantimes.append({"event": "dinky fan on", "local_time": "2024-10-14T16:00:00.000", "y":0.35})
+    fantimes.append({"event": "big fan on",   "local_time": "2024-10-30T21:00:00.000", "y":0.60})
+    for fantime in fantimes:
+        fanline_x = pd.to_datetime(fantime["local_time"], utc=False).tz_localize(tz_string)
+        fanline = ax.vlines(fanline_x, ymin=ax.get_ylim()[0], ymax=ax.get_ylim()[1], label="dinky fan", color="black", linestyles='dashed')
+        ax.text(fanline_x, fantime["y"], fantime["event"], color='k', ha='right', va='top', rotation=90, transform=ax.get_xaxis_transform())
     #ax.legend()
 
     #img_format = "png"
