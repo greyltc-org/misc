@@ -33,8 +33,9 @@ for datafilepath in here.joinpath("data").glob("*.csv"):
 
 
     fantimes = []
-    fantimes.append({"event": "dinky fan on", "local_time": "2024-10-14T16:00:00.000", "y":0.35})
-    fantimes.append({"event": "big fan on",   "local_time": "2024-10-30T21:00:00.000", "y":0.60})
+    fantimes.append({"event": "dinky fan on",             "local_time": "2024-10-14T16:00:00.000", "y":0.35})
+    fantimes.append({"event": "big fan on",               "local_time": "2024-10-30T21:00:00.000", "y":0.60})
+    fantimes.append({"event": "moved to basement desk",   "local_time": "2024-11-10T14:00:00.000", "y":0.60})
     for fantime in fantimes:
         fanline_x = pd.to_datetime(fantime["local_time"], utc=False).tz_localize(tz_string)
         fanline = ax.vlines(fanline_x, ymin=ax.get_ylim()[0], ymax=ax.get_ylim()[1], label="dinky fan", color="black", linestyles='dashed')
