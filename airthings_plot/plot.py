@@ -6,6 +6,10 @@ from pathlib import Path
 
 tz_string = "America/Edmonton"
 
+#img_format = "png"
+img_format = "svg"
+
+
 here = Path(__file__).parent
 for datafilepath in here.joinpath("data").glob("*.csv"):
     name = datafilepath.name
@@ -34,10 +38,11 @@ for datafilepath in here.joinpath("data").glob("*.csv"):
 
 
     fantimes = []
-    fantimes.append({"event": "sensor @ ground floor office",  "local_time": None, "y":0.65})
+    fantimes.append({"event": "baseline: sensor @ ground floor office",  "local_time": None, "y":0.9})
     fantimes.append({"event": "pipe install and dinky fan on", "local_time": "2024-10-14T16:00:00.000", "y":0.65})
     fantimes.append({"event": "big fan swapped in",            "local_time": "2024-10-30T21:00:00.000", "y":0.9})
-    fantimes.append({"event": "sensor @ basement desk",        "local_time": "2024-11-10T14:00:00.000", "y":0.65})
+    fantimes.append({"event": "sensor @ basement desk",        "local_time": "2024-11-10T14:00:00.000", "y":0.9})
+    fantimes.append({"event": "drilled hole in house",         "local_time": "2025-02-15T14:00:00.000", "y":0.9})
     for fantime in fantimes:
         if fantime["local_time"]:
             fanline_x = pd.to_datetime(fantime["local_time"], utc=False).tz_localize(tz_string)
@@ -47,8 +52,6 @@ for datafilepath in here.joinpath("data").glob("*.csv"):
         ax.text(fanline_x, fantime["y"], fantime["event"], color='k', ha='right', va='top', rotation=90, transform=ax.get_xaxis_transform())
     #ax.legend()
 
-    #img_format = "png"
-    img_format = "svg"
     plot_file = here.joinpath(f"{name}.{img_format}")
     print(f"Saving file://{plot_file}")
     ax.figure.savefig(plot_file)
