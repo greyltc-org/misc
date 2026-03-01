@@ -46,11 +46,11 @@ class SBLivePlot(object):
     # curl https://www.nlr.gov/media/docs/libraries/grid/zip/astmg173.zip | bsdtar -xOf- ASTMG173.csv | sed '1s;^;#;' | sed '2s;^;#;' > ISO9845-1.csv
     navgs = 1
     cal_avgs = 500  # number of averages to do for calibration measurements (careful because calibraions done at longer integration times might take a very long time)
-    plot_min_nm = float(0.0)
-    plot_max_nm = float("inf")
+    #plot_min_nm = float(0.0)
+    #plot_max_nm = float("inf")
     # better for Maya2000 pro
-    #plot_min_nm = float(350)
-    #plot_max_nm = float(1000)
+    plot_min_nm = float(350)
+    plot_max_nm = float(1000)
     bars_begin = None
     bars_end = None
     P_solar_expect = 0  # expected solar power over bars range
@@ -327,14 +327,10 @@ class SBLivePlot(object):
         
         self.E = self.nhc / wls
 
-        print(self.exclude)
         clipped_min = self.wls < self.plot_min_nm
         self.exclude = clipped_min
-        print(self.exclude)
         clipped_max = self.wls > self.plot_max_nm
         self.exclude |= clipped_max
-
-        print(self.exclude)
 
         if self.am15 is not None:
             am15wls = self.am15.index.to_numpy().flatten()
