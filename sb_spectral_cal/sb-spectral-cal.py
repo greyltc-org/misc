@@ -17,12 +17,8 @@
 #    - replace the sensor with an calibrated intensity measuring device
 #    - record the intensity value measured by the calibrated intensity measuring device, know the nominal 1 sun expected intensity value for the calibrated device and know its spectral sensitivity or EQE
 # 4. now run it with ./sb-spectral-cal.py offset_cal.csv known_power_shape.csv measured_power_shape.csv measured_intensity.csv known_cal_sensitivity.csv 1_sun_intensity_value measured_intensity_value
+# see runit.sh for examples
 
-# def power_to_photonflux(power:pd.DataFrame, esolar):
-#     flux_frame = power.copy()
-#     flux_frame[1] = flux_frame[1] / esolar
-#     flux_frame["scaler"] = E_solar
-#     return flux_frame
 
 from seabreeze import spectrometers
 import numpy as np
@@ -43,8 +39,6 @@ class SBLivePlot(object):
     correct_dark_counts = True
     sensitivity_file_format:Literal["EQE", "Spectral Sensitivity"] = "Spectral Sensitivity"
     _integration_time_ms = 8
-    #count_clip_warning = 60000  # for QEPRO
-    #count_clip_warning = 200000 - 1000  # for 2000pro
     count_clip_warning = None  # now we query the device for this
     count_clip_warning_buffer = 95  # warn at this percent of full scale
     min_plot_update_ms = 200
@@ -54,8 +48,9 @@ class SBLivePlot(object):
     cal_avgs = 500  # number of averages to do for calibration measurements (careful because calibraions done at longer integration times might take a very long time)
     plot_min_nm = float(0.0)
     plot_max_nm = float("inf")
+    # better for Maya2000 pro
     #plot_min_nm = float(350)
-    #plot_max_nm = float(1080)
+    #plot_max_nm = float(1000)
     bars_begin = None
     bars_end = None
     P_solar_expect = 0  # expected solar power over bars range
@@ -332,11 +327,14 @@ class SBLivePlot(object):
         
         self.E = self.nhc / wls
 
+        print(self.exclude)
         clipped_min = self.wls < self.plot_min_nm
         self.exclude = clipped_min
-
+        print(self.exclude)
         clipped_max = self.wls > self.plot_max_nm
         self.exclude |= clipped_max
+
+        print(self.exclude)
 
         if self.am15 is not None:
             am15wls = self.am15.index.to_numpy().flatten()
@@ -480,11 +478,12 @@ class SBLivePlot(object):
         if self.export_raw_data_to_disk:
             np.savetxt(f"plot_data_{time.time()}.csv", y, delimiter=",")
 
+        y_excluded = y[~self.exclude]
         i_ymax = np.argmax(y)
         ymax = y[i_ymax]
-        self.l.set_ydata(y[~self.exclude])
+        self.l.set_ydata(y_excluded)
         if self.snapshot_pending: 
-            self.ax.plot(self.wls[~self.exclude], y[~self.exclude], color='tab:gray')
+            self.ax.plot(self.wls[~self.exclude], y_excluded, color='tab:gray')
             self.snapshot_pending = False
         bar_heights = []
         if self.fully_calibrated:

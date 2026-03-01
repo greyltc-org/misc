@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 from typing import Literal
+from matplotlib import pyplot as plt
 
 #%% QEPro spectrometer data
 # intensity calibration reference measurement
@@ -33,6 +34,24 @@ counts_shape = pd.read_table("shape_spectrum_8ms_1771673561.7976954.csv", sep=No
 
 # the measurement
 counts_meas  = pd.read_table("one_spectrum_8ms_1771681216.904209.csv", sep=None, comment='#', engine='python', index_col=0, header=None)  # counts / nm
+
+# limit the intensity calibration to data from this range
+irradiance_cal_range = (337, 1000)  # eqe data starts at 337nm and the Maya2000Pro shape scale factor starts to explode past 1000nm
+
+# range over which to plot
+am15_compare_plot_range = (300, 1000)
+
+#%% Maya 2000Pro spectrometer data 2fiber + attenuator
+# intensity calibration reference measurement
+counts_one   = pd.read_table("one_spectrum_8ms_1772303402.1304195.csv", sep=None, comment='#', engine='python', index_col=0, header=None)  # counts / nm
+i_nom = 134.356/1000  # [A] I_sc current value shown on cal. cell's certificate (expected current production under am1.5g)
+i_meas = 134.217/1000 # [A] I_sc value measured for cal. cell while collecting the above intensity calibration reference measurement
+
+# spectral shape calibration reference measurement
+counts_shape = pd.read_table("shape_spectrum_8ms_1772302712.4230602.csv", sep=None, comment='#', engine='python', index_col=0, header=None)  # counts / nm
+
+# the measurement
+counts_meas  = pd.read_table("ch7.csv", sep=None, comment='#', engine='python', index_col=0, header=None)  # counts / nm
 
 # limit the intensity calibration to data from this range
 irradiance_cal_range = (337, 1000)  # eqe data starts at 337nm and the Maya2000Pro shape scale factor starts to explode past 1000nm
@@ -200,3 +219,4 @@ current_compare = power_compare.divide(E_compare, axis=0) * q / 10
 teh_plot = current_compare[current_compare.index.to_series().between(*am15_compare_plot_range)].plot(title="Current Density Comparison", ylabel="Spectral Current Density [mA/cm^2 per nm]", grid=True)
 
 # %%
+plt.show()
